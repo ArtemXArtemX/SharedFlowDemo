@@ -3,6 +3,9 @@ package com.example.sharedflowdemo
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class DemoViewModel : ViewModel() {
 
@@ -13,5 +16,12 @@ class DemoViewModel : ViewModel() {
         sharedFlowInit()
     }
 
-    fun sharedFlowInit() { }
+    private fun sharedFlowInit() {
+        viewModelScope.launch {
+            for (i in 1..1000) {
+                delay(2000)
+                _sharedFlow.emit(i)
+            }
+        }
+    }
 }
