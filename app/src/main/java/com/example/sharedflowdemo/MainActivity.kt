@@ -15,6 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.SharedFlow
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,12 +39,23 @@ fun ScreenSetup(
     MainScreen(modifier, viewModel.sharedFlow)
 }
 
+
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
     sharedFlow: SharedFlow<Int>
 ) {
     val messages = remember { mutableStateListOf<Int>() }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            sharedFlow.collect {
+                println("Collecting $it")
+                messages.add(it)
+            }
+        }
+    }
 
     LazyColumn(modifier = modifier) {
         items(messages) { value ->
